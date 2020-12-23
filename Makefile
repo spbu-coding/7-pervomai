@@ -19,7 +19,7 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 check: $(LOG)
-	@if [ $$check_fail != 0 ]; then \
+	@if [ "$$check_fail" != 0 ]; then \
 		exit 1; \
 	fi
 
@@ -30,7 +30,7 @@ $(LOG): $(BUILD_DIR)/%.log: $(TEST_DIR)/%.in $(EXEC)
 		echo Test $*   passed; \
 	else \
 		check_fail=$$(($$check_fail + 1)); \
-		echo Test $*  failed; \
+		echo "Test $*  failed" ; \
 	fi
 
 clean:
