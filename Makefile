@@ -10,29 +10,28 @@ LOG = $(wildcard $(TEST_DIR)/*.in: $(TEST_DIR)/%.in=$(BUILD_DIR)/%.log)
 all: $(EXEC)
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c | $(BUILD_DIR)
-    $(CC) -c $< -o $@
+	$(CC) -c $< -o $@
 
 $(EXEC): $(OBJECT)
-    $(LD) $^ -o $@
-
+	$(LD) $^ -o $@
+	
 $(BUILD_DIR):
-    mkdir -p $@
+	mkdir -p $@
 
-check:	$(LOG)
+check: $(LOG)
+	@if [ $$check_fail != 0 ]; then \
+		exit 1; \
+	fi
 
-@if [ $$check_fail != 0 ]; then \
-    exit 1; \
-fi
-
-$(LOG): $(BUILD_DIR)/%.log:	$(TEST_DIR)/%.in $(EXEC)
-    @check_fail=0; \
+$(LOG): $(BUILD_DIR)/%.log: $(TEST_DIR)/%.in $(EXEC)
+	@check_fail=0; \
 	@$(EXEC) $< >$@; \
 	@if cmp -s $(TEST_DIR)/$*.out $@; then \
 		echo Test $*   passed; \
 	else \
-	    check_fail=$$(($$check_fail + 1)); \
+		check_fail=$$(($$check_fail + 1)); \
 		echo Test $*  failed; \
 	fi
 
 clean:
-rm -rf $(EXEC) $(OBJECT) $(LOG)
+	rm -rf $(EXEC) $(OBJECT) $(LOG)
