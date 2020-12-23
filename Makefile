@@ -19,19 +19,14 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 check: $(LOG)
-	@if [ "$$check_fail" != "$$check_ok" ]; then \
-		exit 1; \
-	fi
 
-$(LOG): $(BUILD_DIR)/%.log: $(TEST_DIR)/%.in $(EXEC)
-	@check_fail=0; \
-	@check_ok=0; \
+$(BUILD_DIR)/%.log: $(TEST_DIR)/%.in $(EXEC)
 	@$(EXEC) $< >$@; \
 	@if cmp -s $(TEST_DIR)/$*.out $@; then \
-		echo Test $*   passed; \
+		echo Test $*	passed; \
 	else \
-		check_fail=$$(($$check_fail + 1)); \
-		echo "Test $*  failed" ; \
+		echo "Test $*	failed" ; \
+		exit 1 ;  \
 	fi
 
 clean:
