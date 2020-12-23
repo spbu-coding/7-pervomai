@@ -27,6 +27,13 @@ int delete_symbols(char** strings_array, int count_str) {
     return 0;
 }
 
+void add_lf( char* string ){
+    int i;
+    for (i = 0; i < MAX_INPUT_STRING_SIZE && string[i] != '\n' && string[i] !='\0'; i++ ){
+        i++;
+    }
+    string[i] = '\n';
+}
 
 int main(int argc, char* argv[]) {
     if (argc != 2){
@@ -82,6 +89,7 @@ int main(int argc, char* argv[]) {
     }
 
     delete_symbols(strings_array, count_str);
+    add_lf(strings_array[count_str - 1]);
     qsort(strings_array, count_str, sizeof(char*), compare);
 
     for (int i = 0; i < MAX_OUTPUT_STRING_NUM && i < count_str; i++){
