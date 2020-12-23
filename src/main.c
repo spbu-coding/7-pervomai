@@ -88,8 +88,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    delete_symbols(strings_array, count_str);
     add_lf(strings_array[count_str - 1]);
+    delete_symbols(strings_array, count_str);
     qsort(strings_array, count_str, sizeof(char*), compare);
 
     for (int i = 0; i < MAX_OUTPUT_STRING_NUM && i < count_str; i++){
