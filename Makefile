@@ -39,7 +39,7 @@ check: $(LOGS)
     done
 
 
-$(TEST_DIR)/%.log: $(TEST_DIR)/%.in $(TEST_DIR)/%.out $(EXE)
+$(TEST_DIR)/%.log: $(TEST_DIR)/%.in $(TEST_DIR)/%.out $(EXEC)
 
 	@if [ "$$(./$(EXE) ./$<)" = "$$(cat $(word 2, $^))" ]; then \
 	echo "Test $< passed"; \
