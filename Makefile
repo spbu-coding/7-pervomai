@@ -1,54 +1,40 @@
 include CONFIG.cfg
-
 CC = gcc
 LD = gcc
-
 CHECK_OK = ok
 CHECK_FAIL = fail
-
 EXEC = $(BUILD_DIR)/$(NAME)
 OBJECT = $(BUILD_DIR)/main.o
 LOG = $(patsubst $(TEST_DIR)/%.in, $(TEST_DIR)/%.log, $(wildcard $(TEST_DIR)/*.in))
 
-.PHONY: all clean check
+.PHONY: all check clean
 
 all: $(EXEC)
 
-
-$(EXEC): $(OBJECT)
-
-	$(LD) $(LDFLAGS) $^ -o $@
-
-
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c | $(BUILD_DIR)
+	$(CC) -c $< -o $@
 
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@	
-
+$(EXEC): $(OBJECT) | $(BUILD_DIR)
+	$(LD) $^ -o $@
 
 $(BUILD_DIR):
-
 	mkdir -p $@
 
-
-check: $(LOGS)
-
-	@for log in $^ ; do \
-        if [ "$$(cat $${log})" != "$(CHECK_OK)" ]; then \
-            	exit 1; \
-        fi; \
-    done
-
+check: $(LOG)
+	@for test in $^ ; do \
+	if [ "$$(cat $${test})" != "$(CHECK_OK)" ] ; then \
+		exit 1 ; \
+	fi ; \
+	done
 
 $(TEST_DIR)/%.log: $(TEST_DIR)/%.in $(TEST_DIR)/%.out $(EXEC)
-
-	@if [ "$$(./$(EXE) ./$<)" = "$$(cat $(word 2, $^))" ]; then \
-	echo "Test $< passed"; \
-        echo "$(CHECK_OK)" > $@; \
+	@if [ "$$(./$(EXEC) ./$<)" = "$$(cat $(word 2, $^))" ] ; then \
+	echo "$(CHECK_OK)" > $@ ; \
+	echo "Test $<	passed" ; \
     else \
-    	echo "Test $< failed"; \
-        echo "$(CHECK_FAIL)" > $@; \
-	fi
-
+	echo "$(CHECK_FAIL)" > $@ ; \
+	echo "Test $<	failed" ; \
+    fi
 
 clean:
-	$(RM) $(EXEC) $(OBJECT) $(LOG)
+	rm -rf $(EXEC) $(OBJECT) $(LOG)

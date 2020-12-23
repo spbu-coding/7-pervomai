@@ -16,7 +16,7 @@ int delete_symbols(char** strings_array, int count_str) {
         int lenght = (int)strlen(strings_array[k]);
         for (int i = 0; i < lenght; i++) {
             if (strings_array[k][i] == '!' || strings_array[k][i] == '?' || strings_array[k][i] == ';' || strings_array[k][i] == ':'
-            || strings_array[k][i] == '.' || strings_array[k][i] == ',') {
+                || strings_array[k][i] == '.' || strings_array[k][i] == ',') {
                 for (int j = i; j < lenght; j++) {
                     strings_array[k][j] = strings_array[k][j + 1];
                     strings_array[k][j + 1] = '\0';
@@ -58,7 +58,8 @@ int main(int argc, char* argv[]) {
 //READING FILE
 
     while (!feof(input_file)) {
-        strings_array[count_str] = (char *) malloc(sizeof(char) * MAX_INPUT_STRING_SIZE);
+
+        strings_array[count_str] = (char *) calloc(sizeof(char) * MAX_INPUT_STRING_SIZE, 1);
         if (strings_array[count_str] == NULL){
             fclose(input_file);
             for(int i = 0; i < count_str; i++)
@@ -70,8 +71,18 @@ int main(int argc, char* argv[]) {
         }
 
         if (fgets(strings_array[count_str], MAX_INPUT_STRING_SIZE, input_file) == NULL) {
-            error("Fail getting string from input file\n");
-            return -1;
+            if (ferror(input_file)) {
+                error("Fail getting string from input file on %d\n", count_str);
+                fclose(input_file);
+                for(int i = 0; i < count_str; i++)
+                    free(strings_array[i]);
+                free(strings_array);
+                strings_array = NULL;
+                return -1;
+            }
+            else {
+                break;
+            }
         }
 
         count_str++;
@@ -94,7 +105,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < MAX_OUTPUT_STRING_NUM && i < count_str; i++){
         printf("%s", strings_array[i]);
-        }
+    }
 
     fclose(input_file);
     for(int i = 0; i < count_str; i++)
