@@ -14,7 +14,7 @@ all: $(EXEC)
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c | $(BUILD_DIR)
 	$(CC) -c $< -o $@
 
-$(EXEC): $(OBJECT)
+$(EXEC): $(OBJECT) | $(BUILD_DIR)
 	$(LD) $^ -o $@
 	
 $(BUILD_DIR):
@@ -28,7 +28,7 @@ check: $(LOG)
 	done
 
 $(TEST_DIR)/%.log: $(TEST_DIR)/%.in $(TEST_DIR)/%.out $(EXEC)
-	@if [ "$$(./$(EXEC) ./$<)" = "$$(cat $$(TEST_DIR)/%.out)" ] ; then \
+	@if [ "$$(./$(EXEC) ./$<)" = "$$(cat $(word 2, $^))" ] ; then \
 	echo "$(CHECK_OK)" > $@ ; \
 	echo "Test $<	passed" ; \
     else \
